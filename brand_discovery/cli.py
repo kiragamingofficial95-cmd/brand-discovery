@@ -16,8 +16,18 @@ from .blocklist import Blocklist
 from .pipeline import Pipeline
 
 
-def build_components(config_path="config.toml", dry_run=False):
+def build_components(config_path="config.toml", dry_run=False, fast=False):
     cfg = Config.load(config_path)
+    # apply fast mode limits
+    if fast:
+        cfg.raw.setdefault("quotas", {})
+        cfg.raw["quotas"]["max_youtube_searches_per_run"] = 8
+        cfg.raw["quotas"]["max_queries_per_run"] = 5
+        cfg.raw["quotas"]["scraper_request_timeout_seconds"] = 15
+        cfg.raw["quotas"]["scraper_max_retries"] = 1
+        cfg.raw["thresholds"] = cfg.raw.get("thresholds", {})
+        cfg.raw["thresholds"]["min_score"] = 10
+        cfg.raw["thresholds"]["scraper_min_score"] = 10
     db_path = cfg.app.get("db_path", "data/brand_discovery.sqlite")
     db = Database(db_path)
     backend = os.environ.get("YOUTUBE_BACKEND", cfg.youtube.get("backend", "official"))
@@ -33,6 +43,8 @@ def build_components(config_path="config.toml", dry_run=False):
         fixtures_dir=cfg.app.get("dry_run_fixtures_dir", "fixtures"),
         base_url=base_url,
         use_api_key=use_key,
+        timeout=int(cfg.quotas.get("scraper_request_timeout_seconds", 20)) if not use_key else 30,
+        max_retries=int(cfg.quotas.get("scraper_max_retries", 2)) if not use_key else 5,
     )
     web = WebSearchClient(
         config=cfg, db=db, quota=web_quota,
@@ -46,7 +58,7 @@ def build_components(config_path="config.toml", dry_run=False):
 
 
 def cmd_run(args):
-    cfg, db, yt, web, fetcher, blocklist = build_components(args.config, args.dry_run)
+    cfg, db, yt, web, fetcher, blocklist = build_components(args.config, args.dry_run, args.fast)
     # kill switch
     if Path("KILL").exists():
         print("Kill switch active (KILL file present). Aborting.")
@@ -190,6 +202,7 @@ def main(argv=None):
     r.add_argument("--serve", action="store_true", help="Start local dashboard after run")
     r.add_argument("--port", type=int, default=8000)
     r.add_argument("--no-tunnel", action="store_true", help="Disable public tunnel")
+    r.add_argument("--fast", action="store_true", help="Fast mode: fewer queries, lower threshold")
     r.set_defaults(func=cmd_run)
     s = sub.add_parser("seed")
     s.set_defaults(func=cmd_seed)

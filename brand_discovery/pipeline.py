@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, date, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
@@ -22,6 +23,7 @@ from .expansion import (seed_queries, least_recently_scanned, week_slices, updat
                         make_replacement_queries, competitor_queries, max_depth_ok)
 from .blocklist import Blocklist
 from .reports import build_daily_report
+from .youtube_page import fetch_watch_page
 
 
 class Pipeline:
@@ -34,6 +36,7 @@ class Pipeline:
         self.fetcher = fetcher
         self.blocklist = blocklist
         self.dry_run = dry_run
+        self._search_count = 0
 
     def run(self) -> Dict[str, Any]:
         run_id = self.db.start_run()
@@ -57,17 +60,19 @@ class Pipeline:
             if warmup:
                 target = int(self.config.app.get("warmup_target", 8))
             accepted = self._aggregate_and_accept()
-            # shortfall handling
+            # shortfall handling: widen window, competitor expansion
             if len(accepted) < target:
-                # widen window to 180
                 accepted = self._aggregate_and_accept(window_days=180)
             if len(accepted) < target:
-                # competitor expansion: seed queries
                 for b in list(accepted):
                     for cq in competitor_queries(b.get("name") or b["domain"]):
-                        # add as web query? add youtube query
                         self.db.insert_query({"text": cq, "niche": b.get("niche", ""), "sub_niche": b.get("sub_niche", ""),
                                             "source": "youtube", "created_at": datetime.utcnow().isoformat(), "depth": 1})
+            # mark final accepted brands as reported
+            for b in accepted:
+                b["last_reported"] = datetime.utcnow().isoformat()
+                b["report_count"] = (b.get("report_count", 0) or 0) + 1
+                self.db.upsert_brand(b)
             brands_found = len(accepted)
             # prune youtube raw data per API terms
             from .ops import prune_youtube_data
@@ -137,6 +142,15 @@ class Pipeline:
         title = sn.get("title", "") or ""
         tags = sn.get("tags", []) or []
         published = sn.get("publishedAt")
+        # Fallback enrichment from the public watch page when the scraper returns nulls.
+        if (not description.strip()) or (not published):
+            try:
+                meta = fetch_watch_page(vid, self.fetcher)
+                description = description or meta.get("description", "")
+                published = published or meta.get("published_at")
+                title = title or meta.get("title", "")
+            except Exception:
+                pass
         # pinned comment if description empty
         pinned = ""
         if not description.strip():
@@ -189,8 +203,18 @@ class Pipeline:
         self.db.upsert_video(video_rec)
         # store brand evidence for sponsored
         if sponsored:
+            scraper_mode = not self.yt.quota.enforce
             for dom in sponsor_brands:
-                if isinstance(dom, str) and "." in dom and " " not in dom:
+                if not isinstance(dom, str):
+                    continue
+                dom = dom.strip()
+                if not dom:
+                    continue
+                # accept valid domains, or phrase names in scraper mode
+                if ("." in dom and " " not in dom) or scraper_mode:
+                    # normalize phrase names: lowercase, no spaces, add .brand suffix
+                    if "." not in dom or " " in dom:
+                        dom = re.sub(r"[^a-z0-9]+", "", dom.lower()) + ".brand"
                     self._record_youtube_evidence(dom, ch, vid, published, paid_flag, signals, tags)
 
     def _record_youtube_evidence(self, domain: str, ch, vid, published, paid_flag, signals, tags):
@@ -208,6 +232,9 @@ class Pipeline:
         # upsert brand shell
         b = self.db.get_brand(domain) or {"domain": domain, "name": domain, "first_seen": datetime.utcnow().isoformat(),
                                           "evidence": [], "sponsor_count": 0, "creators_90d": 0}
+        if not b.get("niche") and ch.get("niche") in self.config.niches:
+            b["niche"] = ch.get("niche")
+            b["sub_niche"] = ch.get("sub_niche", "")
         b["evidence"] = merge_evidence(b.get("evidence", []), [ev])
         b["sponsor_count"] = b.get("sponsor_count", 0) + 1
         # creators_90d computed later; approximate
@@ -217,30 +244,28 @@ class Pipeline:
     # ---------- youtube expansion ----------
     def _youtube_expansion(self):
         budget = int(self.config.quotas.get("youtube_search_budget", 4000))
+        max_searches = int(self.config.quotas.get("max_youtube_searches_per_run", 40))
+        max_queries = int(self.config.quotas.get("max_queries_per_run", 15))
         used0 = self.yt.quota.used_today()
-        # 20% new queries: ensure some un-run queries get tried
         qs = least_recently_scanned(self.db, "youtube", limit=200)
-        # filter retired
-        qs = [q for q in qs if not q.get("retired")]
-        # sort: least recently scanned first
-        i = 0
-        while i < len(qs) and (self.yt.quota.used_today() - used0) < budget:
-            q = qs[i]
-            i += 1
+        qs = [q for q in qs if not q.get("retired")][:max_queries]
+        for q in qs:
+            if self._search_count >= max_searches:
+                break
+            if self.yt.quota.enforce and (self.yt.quota.used_today() - used0) >= budget:
+                break
             if not max_depth_ok(q.get("depth", 0), self.config):
                 continue
-            # relevance check against niches
             if not self._relevant(q.get("text", "")):
                 self.db.update_query(q["id"], retired=True)
                 continue
-            self._run_youtube_query(q)
+            self._run_youtube_query(q, max_searches)
         # make replacements from sponsored videos
         sponsored_videos = [v for v in self.db.list_videos() if v.get("sponsor_detected")]
         make_replacement_queries(self.db, self.config, sponsored_videos)
 
     def _relevant(self, text: str) -> bool:
         low = text.lower()
-        # relevance: contains a niche or sub-niche keyword or generic sponsor terms
         all_terms = []
         for n in self.config.niches:
             all_terms.append(n.lower())
@@ -250,22 +275,27 @@ class Pipeline:
         all_terms += ["sponsored", "ad", "promo", "review", "partnership"]
         return any(t in low for t in all_terms)
 
-    def _run_youtube_query(self, q: Dict[str, Any]):
-        # slice by week, vary params
+    def _run_youtube_query(self, q: Dict[str, Any], max_searches: int = 40):
+        scraper = not getattr(self.yt.quota, "enforce", True)
         slices = week_slices(days_back=90, slice_days=7)
-        params_variants = week_slices and __import__("itertools").product  # placeholder
-        # We'll do a few variants
         variants = [
             {"order": "relevance", "regionCode": "", "relevanceLanguage": "", "videoDuration": ""},
             {"order": "date", "regionCode": "US", "relevanceLanguage": "en", "videoDuration": ""},
             {"order": "viewCount", "regionCode": "GB", "relevanceLanguage": "en", "videoDuration": "medium"},
         ]
-        new_brands_this = 0
+        if scraper:
+            # scraper ignores publishedAfter/Before and is slower; keep it light
+            slices = slices[:2]
+            variants = variants[:1]
+        before_brands = {b["domain"] for b in self.db.list_brands()}
         units_before = self.yt.quota.used_today()
-        for sl in slices[:4]:  # limit slices per run for budget
+        for sl in slices:
             for var in variants:
-                if self.yt.quota.used_today() >= int(self.config.quotas.get("youtube_hard_stop", 8000)):
+                if self._search_count >= max_searches:
                     break
+                if self.yt.quota.enforce and self.yt.quota.used_today() >= int(self.config.quotas.get("youtube_hard_stop", 8000)):
+                    break
+                self._search_count += 1
                 try:
                     data = self.yt.search(
                         q["text"],
@@ -275,31 +305,33 @@ class Pipeline:
                         videoDuration=var["videoDuration"] or None,
                         publishedAfter=sl[0],
                         publishedBefore=sl[1],
-                        max_results=25,
+                        max_results=5 if scraper else 25,
                     )
                 except Exception:
                     continue
                 items = self.yt.parse_search_items(data)
-                # fetch video details
                 vids = [it.get("id", {}).get("videoId") for it in items if it.get("id", {}).get("videoId")]
+                if scraper:
+                    vids = vids[:5]
                 if not vids:
                     continue
                 try:
                     vdata = self.yt.videos_list(vids, part="snippet,paidProductPlacementDetails")
+                    vitems = vdata.get("items", [])
                 except Exception:
-                    continue
-                for v in vdata.get("items", []):
-                    # find channel info
+                    vitems = []
+                if not vitems:
+                    vitems = [{"id": it["id"]["videoId"], "snippet": it.get("snippet") or {}} for it in items if it.get("id", {}).get("videoId")]
+                for v in vitems:
                     ch_id = (v.get("snippet") or {}).get("channelId")
-                    # ensure channel in pool? fetch channel
-                    self._ensure_channel(ch_id, q.get("niche", ""))
-                    ch = self.db.get_channel(ch_id) or {"channel_id": ch_id, "niche": q.get("niche", ""), "title": (v.get("snippet") or {}).get("channelTitle", "")}
+                    if not scraper:
+                        self._ensure_channel(ch_id, q.get("niche", ""))
+                    ch = self.db.get_channel(ch_id) or {"channel_id": ch_id, "niche": q.get("niche", ""), "sub_niche": q.get("sub_niche", ""),
+                                                        "title": (v.get("snippet") or {}).get("channelTitle", "")}
                     self._process_video(v, ch)
-                    if v.get("id") in [x for x in []]:
-                        pass
-                # count new brands roughly
+        after_brands = {b["domain"] for b in self.db.list_brands()}
+        new_brands_this = len(after_brands - before_brands)
         units_used = self.yt.quota.used_today() - units_before
-        # estimate new brands: brands with first_seen this run? skip; use 0 delta placeholder
         update_query_yield(self.db, q["id"], new_brands_this, max(units_used, 1))
 
     def _ensure_channel(self, channel_id: str, niche: str):
@@ -427,6 +459,22 @@ class Pipeline:
         self.db.add_evidence(domain, ev)
 
     # ---------- aggregate & accept ----------
+    def _classify_domain(self, domain: str, fallback_niche: Optional[str] = None):
+        try:
+            html, status, err = self.fetcher.fetch("https://" + domain)
+        except Exception:
+            html = None
+        if html:
+            n, sn, st = classify(html, domain)
+            if st.startswith("rejected"):
+                return None, None, "rejected"
+            if n:
+                return n, sn, "accepted"
+            return None, None, "needs_human_review"
+        if fallback_niche:
+            return fallback_niche, "", "accepted"
+        return None, None, "needs_human_review"
+
     def _aggregate_and_accept(self, window_days: Optional[int] = None) -> List[Dict[str, Any]]:
         today = date.today()
         if window_days is None:
@@ -440,14 +488,16 @@ class Pipeline:
             domain = b["domain"]
             if self.blocklist.contains(domain):
                 continue
+            # only real root domains are valid brand IDs
+            if "." not in domain or " " in domain:
+                continue
             # classify from stored? need homepage text; we may not have. Use evidence notes/domain.
             # Determine niche
             niche = b.get("niche")
             sub = b.get("sub_niche")
             if not niche:
-                # try classify using domain name as text
-                n, sn, st = classify(domain, domain)
-                if st.startswith("rejected"):
+                n, sn, st = self._classify_domain(domain, b.get("niche"))
+                if st == "rejected":
                     continue
                 niche = n or niche
                 sub = sn or sub
@@ -461,14 +511,17 @@ class Pipeline:
             # acceptance
             evs = b.get("evidence", [])
             # youtube window
-            ok, reason = brand_accepted(evs, today=today, window_days=window_days)
+            ok, reason = brand_accepted(evs, today=today, window_days=window_days,
+                                    scraper_mode=not self.yt.quota.enforce)
             if not ok:
                 continue
             # dated evidence age check already in brand_accepted/evidence_valid
             # score
             has_creator_angle = any("creator" in (e.get("note", "").lower()) or "affiliate" in (e.get("note", "").lower()) or "tracking" in (e.get("note", "").lower()) for e in evs)
-            b["score"] = score_brand(b, self.db, self.config, has_creator_angle=has_creator_angle, today=today)
-            if b["score"] < int(self.config.thresholds.get("min_score", 60)):
+            b["score"] = score_brand(b, self.db, self.config, has_creator_angle=has_creator_angle, today=today,
+                                    scraper_mode=not self.yt.quota.enforce)
+            min_score = self.config.thresholds.get("scraper_min_score", 30) if not self.yt.quota.enforce else self.config.thresholds.get("min_score", 60)
+            if b["score"] < int(min_score):
                 continue
             # older evidence flag
             oe = older_evidence_flag(evs, window_days, today=today)
@@ -508,11 +561,5 @@ class Pipeline:
                     accepted_list.pop(i)
                     removed += 1
                 i -= 1
-
-        # mark reported
-        for b in accepted_list:
-            b["last_reported"] = datetime.utcnow().isoformat()
-            b["report_count"] = (b.get("report_count", 0) or 0) + 1
-            self.db.upsert_brand(b)
 
         return accepted_list

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 VALID_STRENGTHS = {"strong", "medium", "weak"}
 
@@ -23,7 +23,6 @@ def normalize_strength(ev: Dict[str, Any]) -> str:
     s = ev.get("strength", "weak")
     if s not in VALID_STRENGTHS:
         s = "weak"
-    # undated web evidence: medium at most
     if not ev.get("date"):
         if s == "strong":
             s = "medium"
@@ -43,32 +42,30 @@ def youtube_in_window(ev: Dict[str, Any], window_days: int, today: Optional[date
     return ad <= window_days
 
 
-def evidence_valid(ev: Dict[str, Any], today: Optional[date] = None, window_days: int = 90) -> bool:
+def evidence_valid(ev: Dict[str, Any], today: Optional[date] = None, window_days: int = 90, scraper_mode: bool = False) -> bool:
     today = today or date.today()
-    # dated evidence must be under 12 months old
     ad = age_days(ev, today)
+    max_age = 730 if scraper_mode else 365
     if ad is not None:
-        if ad > 365:
+        if ad > max_age:
             return False
         if ad < 0:
             return False
-    # youtube window
-    if not youtube_in_window(ev, window_days, today):
-        return False
-    # undated web evidence: medium at most and only if checked this run
+    if not scraper_mode:
+        if not youtube_in_window(ev, window_days, today):
+            return False
     if not ev.get("date"):
         if ev.get("source_type") == "youtube":
-            return False  # youtube needs date
+            return False
         if not is_live_checked(ev):
             return False
     return True
 
 
 def brand_accepted(evidence: List[Dict[str, Any]], today: Optional[date] = None,
-                   window_days: int = 90) -> Tuple[bool, str]:
+                   window_days: int = 90, scraper_mode: bool = False) -> Tuple[bool, str]:
     today = today or date.today()
-    valid = [e for e in evidence if evidence_valid(e, today, window_days)]
-    # normalize strengths
+    valid = [e for e in evidence if evidence_valid(e, today, window_days, scraper_mode)]
     for e in valid:
         e["strength"] = normalize_strength(e)
     strong = [e for e in valid if e.get("strength") == "strong"]
@@ -77,11 +74,12 @@ def brand_accepted(evidence: List[Dict[str, Any]], today: Optional[date] = None,
         return True, "one_strong"
     if len(medium) >= 2:
         return True, "two_medium"
+    if scraper_mode and (len(strong) + len(medium)) >= 1:
+        return True, "scraper_one_medium"
     return False, "insufficient_evidence"
 
 
 def older_evidence_flag(evidence: List[Dict[str, Any]], window_days: int, today: Optional[date] = None) -> bool:
-    """True if any youtube evidence is older than 90 days but within window_days."""
     today = today or date.today()
     if window_days <= 90:
         return False

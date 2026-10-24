@@ -70,7 +70,10 @@ REJECT_KEYWORDS = [
     "creator economy platform", "influencer software",
 ]
 
-PLATFORM_REJECT = {"youtube.com", "youtu.be", "patreon.com", "spotify.com", "twitch.tv"}
+PLATFORM_REJECT = {"youtube.com", "youtu.be", "patreon.com", "spotify.com", "twitch.tv",
+                   "x.com", "twitter.com", "facebook.com", "instagram.com", "tiktok.com",
+                   "linkedin.com", "reddit.com", "github.com", "medium.com", "discord.com",
+                   "google.com", "apple.com", "amazon.com", "wikipedia.org"}
 
 
 def is_rejected(text: str, domain: str) -> Tuple[bool, str]:

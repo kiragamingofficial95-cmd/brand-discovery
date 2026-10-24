@@ -24,6 +24,10 @@ youtube_search_budget = 4000
 web_search_daily_limit = 100
 web_pages_per_run = 150
 web_request_delay_seconds = 2.5
+max_youtube_searches_per_run = 40
+max_queries_per_run = 15
+scraper_request_timeout_seconds = 20
+scraper_max_retries = 2
 
 [thresholds]
 min_channel_subs = 10000
@@ -37,6 +41,7 @@ re_report_days = 45
 re_report_min_new_creators = 2
 max_re_report_share = 0.30
 min_score = 60
+scraper_min_score = 10
 top_saturation_percent = 0.10
 duplicate_rate_alert = 0.80
 expansion_max_depth = 2

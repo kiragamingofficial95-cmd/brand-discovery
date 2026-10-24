@@ -14,7 +14,7 @@ class YouTubeClient:
     def __init__(self, api_key: str = "", quota=None, dry_run: bool = False, fixtures_dir: str = "fixtures",
                  transport: Optional[Callable[[str, Dict[str, Any]], Dict[str, Any]]] = None,
                  max_retries: int = 5, base_url: str = "https://www.googleapis.com/youtube/v3",
-                 use_api_key: bool = True):
+                 use_api_key: bool = True, timeout: int = 30):
         self.api_key = api_key
         self.quota = quota
         self.dry_run = dry_run
@@ -23,6 +23,7 @@ class YouTubeClient:
         self.max_retries = max_retries
         self.base_url = base_url.rstrip("/")
         self.use_api_key = use_api_key
+        self.timeout = timeout
 
     def _default_transport(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
         # dry run: load fixture
@@ -40,7 +41,7 @@ class YouTubeClient:
         for attempt in range(self.max_retries):
             try:
                 req = urllib.request.Request(url)
-                with urllib.request.urlopen(req, timeout=30) as resp:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                     return json.loads(resp.read().decode())
             except urllib.error.HTTPError as e:
                 body = e.read().decode(errors="replace")

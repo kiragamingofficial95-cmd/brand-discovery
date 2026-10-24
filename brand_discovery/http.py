@@ -27,6 +27,8 @@ class Fetcher:
 
     def _delay(self, host: str) -> None:
         delay = float(self.config.quotas.get("web_request_delay_seconds", 2.5))
+        if host.endswith("youtube.com") or host.endswith("youtu.be"):
+            delay = min(delay, 0.8)
         last = self._last_request.get(host, 0.0)
         wait = delay - (time.time() - last)
         if wait > 0:

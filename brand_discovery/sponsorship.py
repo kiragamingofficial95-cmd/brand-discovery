@@ -89,10 +89,12 @@ def extract_urls(text: str) -> List[str]:
 
 def extract_sponsor_candidates(text: str) -> List[Tuple[str, str]]:
     """Return list of (candidate, signal_type). Candidates may be names or urls."""
+    from .links import is_affiliate_link
     cands: List[Tuple[str, str]] = []
-    # urls
+    # only affiliate/tracker links are sponsorship candidates
     for u in extract_urls(text):
-        cands.append((u, "affiliate_link" if ("ref=" in u.lower() or "via=" in u.lower() or "/go/" in u.lower()) else "link"))
+        if is_affiliate_link(u):
+            cands.append((u, "affiliate_link"))
     low = text.lower()
     # phrase captures: "sponsored by BrandName"
     for phrase in ["sponsored by", "gesponsert von", "patrocinado por", "sponsorisé par", "sponsorise par", "brought to you by", "in partnership with", "en partenariat avec", "in zusammenarbeit mit", "en colaboración con", "em parceria com"]:
@@ -104,12 +106,7 @@ def extract_sponsor_candidates(text: str) -> List[Tuple[str, str]]:
     for phrase in ["thanks to", "gracias a", "merci à", "merci a", "obrigado a"]:
         for m in re.finditer(re.escape(phrase) + r"\s+([A-Z][A-Za-z0-9&.\- ]{1,40})", text, re.I):
             name = m.group(1).strip().rstrip(".,;:!?")
-            # stop at "for sponsoring"
             name = re.split(r"\bfor sponsoring\b", name, flags=re.I)[0].strip()
             if name and len(name) <= 40:
                 cands.append((name, "phrase"))
-    # promo codes
-    for pat in PROMO_PATTERNS:
-        for m in pat.finditer(text):
-            cands.append((m.group(1), "promo_code"))
     return cands

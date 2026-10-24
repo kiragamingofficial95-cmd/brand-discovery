@@ -33,8 +33,7 @@ CREATE TABLE IF NOT EXISTS videos (
     sponsor_detected INTEGER DEFAULT 0,
     sponsor_brands TEXT DEFAULT '[]',
     pinned_comment TEXT DEFAULT '',
-    raw_json TEXT,
-    FOREIGN KEY (channel_id) REFERENCES channels(channel_id)
+    raw_json TEXT
 );
 
 CREATE TABLE IF NOT EXISTS brands (
