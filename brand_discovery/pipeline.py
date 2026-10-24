@@ -106,8 +106,8 @@ class Pipeline:
             return
         video_ids = []
         for it in items:
-            sn = it.get("snippet", {})
-            vid = it.get("contentDetails", {}).get("videoId") or sn.get("resourceId", {}).get("videoId")
+            sn = it.get("snippet") or {}
+            vid = (it.get("contentDetails") or {}).get("videoId") or (sn.get("resourceId") or {}).get("videoId")
             if vid:
                 video_ids.append(vid)
         if not video_ids:
@@ -127,7 +127,7 @@ class Pipeline:
 
     def _process_video(self, v: Dict[str, Any], ch: Dict[str, Any]):
         vid = v.get("id")
-        sn = v.get("snippet", {})
+        sn = v.get("snippet") or {}
         pppd = v.get("paidProductPlacementDetails") or {}
         paid_flag = bool(pppd) or bool(v.get("paidProductPlacement"))
         # Actually paidProductPlacementDetails presence indicates paid placement
@@ -143,7 +143,7 @@ class Pipeline:
             try:
                 cd = self.yt.comment_threads_list(vid, max_results=3)
                 for c in cd.get("items", []):
-                    top = c.get("snippet", {}).get("topLevelComment", {}).get("snippet", {})
+                    top = ((c.get("snippet") or {}).get("topLevelComment") or {}).get("snippet") or {}
                     if top.get("textDisplay"):
                         pinned = top.get("textDisplay", "")
                         break
@@ -290,10 +290,10 @@ class Pipeline:
                     continue
                 for v in vdata.get("items", []):
                     # find channel info
-                    ch_id = v.get("snippet", {}).get("channelId")
+                    ch_id = (v.get("snippet") or {}).get("channelId")
                     # ensure channel in pool? fetch channel
                     self._ensure_channel(ch_id, q.get("niche", ""))
-                    ch = self.db.get_channel(ch_id) or {"channel_id": ch_id, "niche": q.get("niche", ""), "title": v.get("snippet", {}).get("channelTitle", "")}
+                    ch = self.db.get_channel(ch_id) or {"channel_id": ch_id, "niche": q.get("niche", ""), "title": (v.get("snippet") or {}).get("channelTitle", "")}
                     self._process_video(v, ch)
                     if v.get("id") in [x for x in []]:
                         pass
@@ -312,14 +312,14 @@ class Pipeline:
         except Exception:
             return
         for c in data.get("items", []):
-            sn = c.get("snippet", {})
-            stats = c.get("statistics", {})
+            sn = c.get("snippet") or {}
+            stats = c.get("statistics") or {}
             subs = int(stats.get("subscriberCount", 0) or 0)
             if not in_size_band(subs, self.config):
                 return
             uploads = uc_to_uu(channel_id)
-            cd = c.get("contentDetails", {})
-            if cd.get("relatedPlaylists", {}).get("uploads"):
+            cd = c.get("contentDetails") or {}
+            if (cd.get("relatedPlaylists") or {}).get("uploads"):
                 uploads = cd["relatedPlaylists"]["uploads"]
             ch = {
                 "channel_id": channel_id,
