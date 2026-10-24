@@ -39,6 +39,10 @@ class Config:
     def web(self) -> Dict[str, Any]:
         return self.raw.get("web", {})
 
+    @property
+    def youtube(self) -> Dict[str, Any]:
+        return self.raw.get("youtube", {})
+
     def get(self, *keys: str, default: Any = None) -> Any:
         cur: Any = self.raw
         for k in keys:

@@ -15,11 +15,12 @@ class QuotaExceeded(Exception):
 
 
 class QuotaManager:
-    def __init__(self, db: Database, config: Config, service: str = "youtube"):
+    def __init__(self, db: Database, config: Config, service: str = "youtube", enforce: bool = True):
         self.db = db
         self.config = config
         self.service = service
         self._run_id: Optional[int] = None
+        self.enforce = enforce
 
     def set_run(self, run_id: int) -> None:
         self._run_id = run_id
@@ -59,11 +60,15 @@ class QuotaManager:
         return (self.used_today() + cost) <= self.hard_stop()
 
     def charge(self, operation: str, cost: int) -> None:
+        if not self.enforce:
+            return
         if not self.can_afford(cost):
             raise QuotaExceeded(f"{self.service} quota would exceed hard stop ({self.hard_stop()})")
         self.db.log_quota(self.service, operation, cost, self._run_id)
 
     def guard(self, operation: str, cost: int) -> None:
         """Call before making API request; raises QuotaExceeded if not affordable."""
+        if not self.enforce:
+            return
         if not self.can_afford(cost):
             raise QuotaExceeded(f"{self.service} hard stop reached")

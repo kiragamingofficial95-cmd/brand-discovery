@@ -6,16 +6,22 @@ __pycache__/
 venv/
 
 # State / runtime
-data/
-cache/
-reports/
-backups/
-fixtures/*.json
+/data/
+/cache/
+/reports/
+/backups/
+/fixtures/*.json
+# keep dashboard data
+!/docs/data/
+!/docs/data/latest.json
 
 # Misc
-youtube-scraper-api/
+youtube-scraper-api/node_modules/
+youtube-scraper-api/.env
 node_modules/
 .DS_Store
 KILL
+*.log
+*.err
 *.sqlite
 *.sqlite-journal

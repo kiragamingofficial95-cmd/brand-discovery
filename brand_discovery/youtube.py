@@ -11,15 +11,18 @@ BASE = "https://www.googleapis.com/youtube/v3"
 
 
 class YouTubeClient:
-    def __init__(self, api_key: str, quota, dry_run: bool = False, fixtures_dir: str = "fixtures",
+    def __init__(self, api_key: str = "", quota=None, dry_run: bool = False, fixtures_dir: str = "fixtures",
                  transport: Optional[Callable[[str, Dict[str, Any]], Dict[str, Any]]] = None,
-                 max_retries: int = 5):
+                 max_retries: int = 5, base_url: str = "https://www.googleapis.com/youtube/v3",
+                 use_api_key: bool = True):
         self.api_key = api_key
         self.quota = quota
         self.dry_run = dry_run
         self.fixtures_dir = fixtures_dir
         self.transport = transport or self._default_transport
         self.max_retries = max_retries
+        self.base_url = base_url.rstrip("/")
+        self.use_api_key = use_api_key
 
     def _default_transport(self, endpoint: str, params: Dict[str, Any]) -> Dict[str, Any]:
         # dry run: load fixture
@@ -32,7 +35,7 @@ class YouTubeClient:
                 raise FileNotFoundError(f"dry-run fixture missing: {path}")
             with open(path) as f:
                 return json.load(f)
-        url = BASE + "/" + endpoint + "?" + urllib.parse.urlencode(params)
+        url = self.base_url + "/" + endpoint + "?" + urllib.parse.urlencode(params)
         last_err = None
         for attempt in range(self.max_retries):
             try:
@@ -57,14 +60,19 @@ class YouTubeClient:
         raise RuntimeError(last_err or "transport failed")
 
     def _call(self, endpoint: str, params: Dict[str, Any], cost: int, operation: str) -> Dict[str, Any]:
-        self.quota.guard(operation, cost)
+        if self.quota is not None:
+            self.quota.guard(operation, cost)
+        call_params = dict(params)
+        if not self.dry_run and self.use_api_key and self.api_key:
+            call_params["key"] = self.api_key
         try:
-            data = self.transport(endpoint, {**params, "key": self.api_key} if not self.dry_run else params)
+            data = self.transport(endpoint, call_params if not self.dry_run else params)
         except RuntimeError as e:
             if "quotaExceeded" in str(e):
                 raise
             raise
-        self.quota.charge(operation, cost)
+        if self.quota is not None:
+            self.quota.charge(operation, cost)
         return data
 
     def search(self, q: str, part: str = "snippet", max_results: int = 25, **kwargs) -> Dict[str, Any]:

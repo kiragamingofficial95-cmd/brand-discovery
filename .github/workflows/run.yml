@@ -17,6 +17,13 @@ jobs:
           YOUTUBE_BASE_URL: https://youtube-scraper-api-olive.vercel.app/youtube/v3
           WEB_SEARCH_API_KEY: ${{ secrets.WEB_SEARCH_API_KEY }}
         run: python -m brand_discovery run
+      - name: Publish dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/latest.json reports/*.csv || true
+          git commit -m "Update dashboard data [skip ci]" || echo "no changes"
+          git push || echo "push failed"
       - uses: actions/upload-artifact@v4
         with:
           name: reports
