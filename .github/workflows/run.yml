@@ -8,27 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Start self-made YouTube scraper API
-        run: |
-          git clone https://github.com/kiragamingofficial95-cmd/youtube-scraper-api.git /tmp/ytscraper
-          cd /tmp/ytscraper
-          npm install
-          PORT=8080 npm start > /tmp/scraper.log 2>&1 &
-          for i in $(seq 1 60); do
-            if curl -sf http://localhost:8080/youtube/v3/i18nRegions >/dev/null 2>&1; then echo "scraper ready"; break; fi
-            sleep 2
-          done
-          cat /tmp/scraper.log | tail -20
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Run brand discovery
         env:
           YOUTUBE_BACKEND: scraper
-          YOUTUBE_BASE_URL: http://localhost:8080/youtube/v3
+          YOUTUBE_BASE_URL: https://youtube-scraper-api-olive.vercel.app/youtube/v3
           WEB_SEARCH_API_KEY: ${{ secrets.WEB_SEARCH_API_KEY }}
         run: python -m brand_discovery run
       - uses: actions/upload-artifact@v4

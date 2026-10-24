@@ -1,3 +1,8 @@
+[youtube]
+backend = "scraper"          # "official" or "scraper"
+base_url = "https://youtube-scraper-api-olive.vercel.app/youtube/v3"
+# official backend uses YOUTUBE_API_KEY and quota; scraper uses no key/quota
+
 [app]
 name = "brand-discovery"
 db_path = "data/brand_discovery.sqlite"
