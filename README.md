@@ -23,6 +23,25 @@ Discovers brands that pay creators to promote them, across five niches: AI, SaaS
 - Phase 3: 7-day warm-up, target 5-8/day (`warmup=true` in config).
 - Phase 4: full operation, 15+/day.
 
+## GitHub Actions (click-to-run)
+
+The workflow file is provided as `github-workflow-run.yml` at repo root because the initial push token lacked the `workflow` scope. To enable "Run workflow":
+
+1. In GitHub, open the repo -> Add file -> Create new file.
+2. Name it `.github/workflows/run.yml`.
+3. Paste the contents of `github-workflow-run.yml`.
+4. Commit.
+5. Go to Settings -> Secrets and variables -> Actions, add `YOUTUBE_API_KEY` and `WEB_SEARCH_API_KEY`.
+6. Open Actions tab -> select "brand-discovery" -> Run workflow.
+
+Alternatively, grant workflow scope locally and push:
+```
+gh auth refresh --scopes workflow
+git mv github-workflow-run.yml .github/workflows/run.yml
+git commit -m "Enable workflow"
+git push
+```
+
 ## Operations
 
 - Runs every 3-4 hours via cron/GitHub Actions/free cloud server.
