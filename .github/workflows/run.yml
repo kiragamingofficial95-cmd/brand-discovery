@@ -31,6 +31,13 @@ jobs:
           git add docs/data/latest.json reports/*.csv || true
           git commit -m "Update dashboard data [skip ci]" || echo "no changes"
           git push || echo "push failed"
+      - name: Deploy to GitHub Pages
+        uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy
+        uses: actions/deploy-pages@v4
       - uses: actions/upload-artifact@v4
         with:
           name: reports
