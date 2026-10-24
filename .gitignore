@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# State / runtime
+data/
+cache/
+reports/
+backups/
+fixtures/*.json
+
+# Misc
+youtube-scraper-api/
+node_modules/
+.DS_Store
+KILL
+*.sqlite
+*.sqlite-journal

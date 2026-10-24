@@ -1,0 +1,67 @@
+[app]
+name = "brand-discovery"
+db_path = "data/brand_discovery.sqlite"
+cache_dir = "cache"
+reports_dir = "reports"
+blocklist_path = "data/blocklist.txt"
+dry_run = false
+dry_run_fixtures_dir = "fixtures"
+run_interval_hours = 3
+timezone = "America/Los_Angeles"
+daily_target = 15
+warmup = false
+warmup_target = 8
+
+[quotas]
+youtube_daily_units = 10000
+youtube_hard_stop = 8000
+youtube_search_budget = 4000
+web_search_daily_limit = 100
+web_pages_per_run = 150
+web_request_delay_seconds = 2.5
+
+[thresholds]
+min_channel_subs = 10000
+max_channel_subs = 500000
+channel_pool_target_per_niche = 300
+rescan_min_days = 3
+rescan_max_days = 7
+sponsorship_window_days = 90
+shortfall_window_days = 180
+re_report_days = 45
+re_report_min_new_creators = 2
+max_re_report_share = 0.30
+min_score = 60
+top_saturation_percent = 0.10
+duplicate_rate_alert = 0.80
+expansion_max_depth = 2
+batch_size_videos = 50
+
+[niches]
+list = ["AI", "SaaS", "tech", "health and wellness", "tourism"]
+
+[subniches]
+AI = ["video tools", "coding assistants", "writing", "note-taking", "voice", "image generation", "agents"]
+SaaS = ["CRM", "project management", "email", "invoicing", "no-code", "security and VPN", "design", "HR"]
+tech = ["gadgets", "smart home", "audio", "desk setups", "phones", "cameras", "PC parts"]
+"health and wellness" = ["sleep", "fitness gear", "nutrition and supplements", "meditation apps", "skincare", "mental health apps", "wearables"]
+tourism = ["hotels", "resorts", "tours", "cruises", "airlines", "destinations and tourism boards", "travel gear", "booking platforms"]
+
+[scoring]
+base = 0
+distinct_creators_90d_weight = 8
+recency_weight = 10
+promo_code_or_paid_flag = 15
+two_source_agreement = 12
+momentum_weight = 10
+saturation_penalty = 15
+no_creator_angle_penalty = 20
+
+[web]
+search_api = "serpapi"
+manual_sources = [
+  "Meta Ad Library",
+  "Google Ads Transparency Center",
+  "TikTok Creative Center",
+  "creators' social posts",
+]
