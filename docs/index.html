@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brand Discovery Dashboard</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --accent:#38bdf8; --text:#e2e8f0; --muted:#94a3b8; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);padding:24px}
+  h1{font-size:24px;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+  .card{background:var(--card);border-radius:12px;padding:16px}
+  .card h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+  .card .val{font-size:28px;font-weight:700}
+  .card .val.accent{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}
+  th,td{padding:10px 12px;text-align:left;font-size:13px;border-bottom:1px solid #334155}
+  th{color:var(--muted);font-weight:600;background:#0f172a}
+  tr:last-child td{border-bottom:none}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:#334155}
+  .badge.strong{background:#16a34a;color:#fff}
+  .badge.medium{background:#ca8a04;color:#fff}
+  .bar{height:8px;background:#334155;border-radius:4px;overflow:hidden;margin-top:6px}
+  .bar>div{height:100%;background:var(--accent)}
+  .row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .col{flex:1;min-width:280px}
+  #status{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .empty{color:var(--muted);padding:24px;text-align:center}
+</style>
+</head>
+<body>
+<h1>Brand Discovery Dashboard</h1>
+<div class="sub">Live tracking of discovered brands · auto-refreshes every 60s</div>
+<div id="status">Loading…</div>
+
+<div class="grid" id="kpis"></div>
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <h3>Brands per niche</h3>
+      <div id="niches"></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <h3>Quota used</h3>
+      <div id="quota"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <h3>Discovered brands</h3>
+  <div style="overflow:auto">
+  <table id="brands">
+    <thead><tr><th>Name</th><th>Website</th><th>Niche</th><th>Sub-niche</th><th>Score</th><th>Evidence</th><th>Older</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Best queries</h3>
+  <div style="overflow:auto">
+  <table id="queries">
+    <thead><tr><th>Query</th><th>Yield (brands/100 units)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+</div>
+
+<script>
+const DATA_URL = './data/latest.json';
+async function load(){
+  try{
+    const r = await fetch(DATA_URL + '?t=' + Date.now());
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    render(d);
+    document.getElementById('status').textContent = 'Last updated: ' + (d.generated_at || 'unknown') + ' · ' + (d.total_brands||0) + ' brands';
+  }catch(e){
+    document.getElementById('status').textContent = 'No data yet: ' + e.message;
+  }
+}
+function render(d){
+  const kpis = document.getElementById('kpis');
+  kpis.innerHTML = '';
+  const items = [
+    {label:'Total brands', value:d.total_brands||0, accent:true},
+    {label:'Duplicate rate', value: Math.round((d.duplicate_rate||0)*100)+'%', accent:false},
+    {label:'Re-reported', value:d.re_reported||0, accent:false},
+    {label:'YT units used', value:d.youtube_units_used||0, accent:false},
+    {label:'Web calls used', value:d.web_calls_used||0, accent:false},
+  ];
+  items.forEach(it=>{
+    const c=document.createElement('div'); c.className='card';
+    c.innerHTML=`<h3>${it.label}</h3><div class="val ${it.accent?'accent':''}">${it.value}</div>`;
+    kpis.appendChild(c);
+  });
+  // niches
+  const nichesDiv = document.getElementById('niches');
+  nichesDiv.innerHTML = '';
+  const per = d.brands_per_niche || {};
+  const max = Math.max(1, ...Object.values(per));
+  Object.entries(per).sort((a,b)=>b[1]-a[1]).forEach(([n,v])=>{
+    const row=document.createElement('div');
+    row.style.marginBottom='8px';
+    row.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px"><span>${n}</span><span>${v}</span></div><div class="bar"><div style="width:${(v/max*100)}%"></div></div>`;
+    nichesDiv.appendChild(row);
+  });
+  if(!Object.keys(per).length) nichesDiv.innerHTML='<div class="empty">No data</div>';
+  // quota
+  document.getElementById('quota').innerHTML = `<div style="font-size:13px">YouTube: ${d.youtube_units_used||0} units</div><div style="font-size:13px;margin-top:4px">Web: ${d.web_calls_used||0} calls</div>`;
+  // brands
+  const tbody = document.querySelector('#brands tbody');
+  tbody.innerHTML = '';
+  (d.brands||[]).forEach(b=>{
+    const tr=document.createElement('tr');
+    const ev = (b.evidence||[]).map(e=>`<span class="badge ${e.strength}">${e.strength}</span>`).join(' ');
+    tr.innerHTML = `<td>${b.name||''}</td><td><a href="${b.website||'#'}" target="_blank" style="color:var(--accent)">${b.website||''}</a></td><td>${b.niche||''}</td><td>${b.sub_niche||''}</td><td>${b.score||0}</td><td>${ev}</td><td>${b.older_evidence?'yes':''}</td>`;
+    tbody.appendChild(tr);
+  });
+  if(!(d.brands||[]).length) tbody.innerHTML='<tr><td colspan="7" class="empty">No brands yet</td></tr>';
+  // queries
+  const qtbody = document.querySelector('#queries tbody');
+  qtbody.innerHTML = '';
+  (d.best_queries||[]).forEach(q=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td>${q.text||''}</td><td>${(q.yield||0).toFixed? (q.yield||0).toFixed(2) : (q.yield||0)}</td>`;
+    qtbody.appendChild(tr);
+  });
+  if(!(d.best_queries||[]).length) qtbody.innerHTML='<tr><td colspan="2" class="empty">No queries yet</td></tr>';
+}
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>
+PYEOF
