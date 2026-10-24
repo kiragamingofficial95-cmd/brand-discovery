@@ -12,6 +12,7 @@ Discovers brands that pay creators to promote them, across five niches: AI, SaaS
 ## Setup
 
 1. Set env vars: `YOUTUBE_BACKEND` (official|scraper, default scraper), `YOUTUBE_BASE_URL` (default http://localhost:8080/youtube/v3), `WEB_SEARCH_API_KEY` (optional). For official backend, also set `YOUTUBE_API_KEY`.
+   Note: the self-made scraper provides titles/channel IDs but not descriptions, publish dates or paid-promotion flags, so YouTube-side sponsorship detection is limited. For full brand discovery use `YOUTUBE_BACKEND=official` with a `YOUTUBE_API_KEY`.
 2. Optional blocklist: `data/blocklist.txt` (one domain per line) of already-emailed brands.
 3. Run `python -m brand_discovery seed` to seed starter queries.
 4. Run `python -m brand_discovery run` (or `--dry-run`).
