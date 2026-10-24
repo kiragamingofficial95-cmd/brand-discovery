@@ -11,7 +11,7 @@ Discovers brands that pay creators to promote them, across five niches: AI, SaaS
 
 ## Setup
 
-1. Set env vars: `YOUTUBE_API_KEY`, `WEB_SEARCH_API_KEY`.
+1. Set env vars: `YOUTUBE_BACKEND` (official|scraper, default scraper), `YOUTUBE_BASE_URL` (default http://localhost:8080/youtube/v3), `WEB_SEARCH_API_KEY` (optional). For official backend, also set `YOUTUBE_API_KEY`.
 2. Optional blocklist: `data/blocklist.txt` (one domain per line) of already-emailed brands.
 3. Run `python -m brand_discovery seed` to seed starter queries.
 4. Run `python -m brand_discovery run` (or `--dry-run`).
@@ -31,7 +31,7 @@ The workflow file is provided as `github-workflow-run.yml` at repo root because 
 2. Name it `.github/workflows/run.yml`.
 3. Paste the contents of `github-workflow-run.yml`.
 4. Commit.
-5. Go to Settings -> Secrets and variables -> Actions, add `YOUTUBE_API_KEY` and `WEB_SEARCH_API_KEY`.
+5. (Optional) Go to Settings -> Secrets and variables -> Actions, add `WEB_SEARCH_API_KEY`. YouTube uses the self-made scraper (no key).
 6. Open Actions tab -> select "brand-discovery" -> Run workflow.
 
 Alternatively, grant workflow scope locally and push:
