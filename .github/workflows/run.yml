@@ -3,11 +3,18 @@ on:
   schedule:
     - cron: "0 */3 * * *"
   workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -21,7 +28,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git add docs/data/latest.json reports/*.csv || true
           git commit -m "Update dashboard data [skip ci]" || echo "no changes"
           git push || echo "push failed"
