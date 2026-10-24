@@ -74,7 +74,8 @@ def cmd_run(args):
     (docs_data / "latest.json").write_text(json.dumps(result["report"], indent=2, default=str), encoding="utf-8")
     print(f"Dashboard data written: {docs_data / 'latest.json'}")
     if getattr(args, "serve", False):
-        _serve_dashboard(docs_data.parent.parent, getattr(args, "port", 8000), open_browser=True)
+        _serve_dashboard(docs_data.parent.parent, getattr(args, "port", 8000), open_browser=True,
+                        tunnel=not getattr(args, "no_tunnel", False))
 
 
 def datetime_now():
@@ -89,25 +90,86 @@ def cmd_seed(args):
     print(f"Seeded {n} queries")
 
 
-def _serve_dashboard(docs_dir: Path, port: int = 8000, open_browser: bool = False):
+def _start_tunnel(port: int):
+    """Start a temporary public tunnel (cloudflared or localtunnel). Returns (proc, url)."""
+    import subprocess, shutil, re, time, threading
+    # try cloudflared
+    cf = shutil.which("cloudflared")
+    if cf:
+        proc = subprocess.Popen([cf, "tunnel", "--url", f"http://localhost:{port}"],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        url = _capture_url(proc, r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", timeout=30)
+        if url:
+            return proc, url
+        proc.terminate()
+    # try npx localtunnel
+    npx = shutil.which("npx")
+    if npx:
+        proc = subprocess.Popen([npx, "--yes", "localtunnel", "--port", str(port)],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        url = _capture_url(proc, r"https://[a-zA-Z0-9-]+\.loca\.lt", timeout=40)
+        if url:
+            return proc, url
+        proc.terminate()
+    return None, None
+
+
+def _capture_url(proc, pattern, timeout=30):
+    import re, time
+    deadline = time.time() + timeout
+    buf = ""
+    while time.time() < deadline:
+        # read available
+        try:
+            line = proc.stdout.readline()
+        except Exception:
+            line = ""
+        if line:
+            buf += line
+            m = re.search(pattern, buf)
+            if m:
+                return m.group(0)
+        else:
+            time.sleep(0.5)
+            if proc.poll() is not None:
+                break
+    m = re.search(pattern, buf)
+    return m.group(0) if m else None
+
+
+def _serve_dashboard(docs_dir: Path, port: int = 8000, open_browser: bool = False, tunnel: bool = True):
     import http.server, socketserver, webbrowser, threading, time
     docs_dir = Path(docs_dir)
     if not docs_dir.exists():
         docs_dir.mkdir(parents=True, exist_ok=True)
     handler = http.server.SimpleHTTPRequestHandler
-    # serve from docs_dir
     class H(handler):
         def __init__(self, *a, **kw):
             super().__init__(*a, directory=str(docs_dir), **kw)
     httpd = socketserver.TCPServer(("", port), H)
-    url = f"http://localhost:{port}/"
-    print(f"Dashboard live at {url}")
-    if open_browser:
-        threading.Timer(1.0, lambda: webbrowser.open(url)).start()
+    local_url = f"http://localhost:{port}/"
+    print(f"Dashboard local at {local_url}")
+    public_url = None
+    tunnel_proc = None
+    if tunnel:
+        tunnel_proc, public_url = _start_tunnel(port)
+        if public_url:
+            print(f"Dashboard public (temp) at {public_url}")
+            if open_browser:
+                threading.Timer(1.0, lambda: webbrowser.open(public_url)).start()
+        else:
+            print("No tunnel tool found (install cloudflared or npx). Using local URL.")
+            if open_browser:
+                threading.Timer(1.0, lambda: webbrowser.open(local_url)).start()
+    else:
+        if open_browser:
+            threading.Timer(1.0, lambda: webbrowser.open(local_url)).start()
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.shutdown()
+        if tunnel_proc:
+            tunnel_proc.terminate()
 
 
 def cmd_serve(args):
@@ -115,7 +177,8 @@ def cmd_serve(args):
     docs_dir = Path(cfg.app.get("reports_dir", "reports")).parent / "docs"
     if not docs_dir.exists():
         docs_dir = Path("docs")
-    _serve_dashboard(docs_dir, args.port, open_browser=not args.no_browser)
+    _serve_dashboard(docs_dir, args.port, open_browser=not args.no_browser,
+                    tunnel=not getattr(args, "no_tunnel", False))
 
 
 def main(argv=None):
@@ -126,12 +189,14 @@ def main(argv=None):
     r.add_argument("--dry-run", action="store_true")
     r.add_argument("--serve", action="store_true", help="Start local dashboard after run")
     r.add_argument("--port", type=int, default=8000)
+    r.add_argument("--no-tunnel", action="store_true", help="Disable public tunnel")
     r.set_defaults(func=cmd_run)
     s = sub.add_parser("seed")
     s.set_defaults(func=cmd_seed)
     sv = sub.add_parser("serve")
     sv.add_argument("--port", type=int, default=8000)
     sv.add_argument("--no-browser", action="store_true")
+    sv.add_argument("--no-tunnel", action="store_true")
     sv.set_defaults(func=cmd_serve)
     args = parser.parse_args(argv)
     if not hasattr(args, "func"):
