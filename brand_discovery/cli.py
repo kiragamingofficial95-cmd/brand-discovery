@@ -20,13 +20,19 @@ def build_components(config_path="config.toml", dry_run=False):
     cfg = Config.load(config_path)
     db_path = cfg.app.get("db_path", "data/brand_discovery.sqlite")
     db = Database(db_path)
-    yt_quota = QuotaManager(db, cfg, "youtube")
+    backend = os.environ.get("YOUTUBE_BACKEND", cfg.youtube.get("backend", "official"))
+    base_url = os.environ.get("YOUTUBE_BASE_URL", cfg.youtube.get("base_url", "https://www.googleapis.com/youtube/v3"))
+    use_key = backend == "official"
+    enforce_quota = backend == "official"
+    yt_quota = QuotaManager(db, cfg, "youtube", enforce=enforce_quota)
     web_quota = QuotaManager(db, cfg, "web")
     yt = YouTubeClient(
-        api_key=os.environ.get("YOUTUBE_API_KEY", ""),
+        api_key=os.environ.get("YOUTUBE_API_KEY", "") if use_key else "",
         quota=yt_quota,
         dry_run=dry_run or cfg.app.get("dry_run", False),
         fixtures_dir=cfg.app.get("dry_run_fixtures_dir", "fixtures"),
+        base_url=base_url,
+        use_api_key=use_key,
     )
     web = WebSearchClient(
         config=cfg, db=db, quota=web_quota,
@@ -59,6 +65,16 @@ def cmd_run(args):
         for b in result["accepted"]:
             w.writerow([b.get("name"), b.get("website"), b.get("niche"), b.get("sub_niche"), b.get("score"), b.get("older_evidence")])
     print(f"CSV written: {out}")
+    # write latest.json for dashboard
+    import json
+    docs_data = Path(cfg.app.get("reports_dir", "reports")).parent / "docs" / "data"
+    if not docs_data.exists():
+        docs_data = Path("docs/data")
+    docs_data.mkdir(parents=True, exist_ok=True)
+    (docs_data / "latest.json").write_text(json.dumps(result["report"], indent=2, default=str), encoding="utf-8")
+    print(f"Dashboard data written: {docs_data / 'latest.json'}")
+    if getattr(args, "serve", False):
+        _serve_dashboard(docs_data.parent.parent, getattr(args, "port", 8000), open_browser=True)
 
 
 def datetime_now():
@@ -73,15 +89,50 @@ def cmd_seed(args):
     print(f"Seeded {n} queries")
 
 
+def _serve_dashboard(docs_dir: Path, port: int = 8000, open_browser: bool = False):
+    import http.server, socketserver, webbrowser, threading, time
+    docs_dir = Path(docs_dir)
+    if not docs_dir.exists():
+        docs_dir.mkdir(parents=True, exist_ok=True)
+    handler = http.server.SimpleHTTPRequestHandler
+    # serve from docs_dir
+    class H(handler):
+        def __init__(self, *a, **kw):
+            super().__init__(*a, directory=str(docs_dir), **kw)
+    httpd = socketserver.TCPServer(("", port), H)
+    url = f"http://localhost:{port}/"
+    print(f"Dashboard live at {url}")
+    if open_browser:
+        threading.Timer(1.0, lambda: webbrowser.open(url)).start()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        httpd.shutdown()
+
+
+def cmd_serve(args):
+    cfg, *_ = build_components(args.config, True)
+    docs_dir = Path(cfg.app.get("reports_dir", "reports")).parent / "docs"
+    if not docs_dir.exists():
+        docs_dir = Path("docs")
+    _serve_dashboard(docs_dir, args.port, open_browser=not args.no_browser)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="brand-discovery")
     parser.add_argument("--config", default="config.toml")
     sub = parser.add_subparsers(dest="cmd")
     r = sub.add_parser("run")
     r.add_argument("--dry-run", action="store_true")
+    r.add_argument("--serve", action="store_true", help="Start local dashboard after run")
+    r.add_argument("--port", type=int, default=8000)
     r.set_defaults(func=cmd_run)
     s = sub.add_parser("seed")
     s.set_defaults(func=cmd_seed)
+    sv = sub.add_parser("serve")
+    sv.add_argument("--port", type=int, default=8000)
+    sv.add_argument("--no-browser", action="store_true")
+    sv.set_defaults(func=cmd_serve)
     args = parser.parse_args(argv)
     if not hasattr(args, "func"):
         parser.print_help()
