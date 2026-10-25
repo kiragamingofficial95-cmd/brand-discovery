@@ -23,5 +23,7 @@ node_modules/
 KILL
 *.log
 *.err
+.env
+.env.local
 *.sqlite
 *.sqlite-journal

@@ -1,1 +1,3 @@
-# stdlib only; no third-party dependencies required
+# Core runtime uses stdlib only.
+# Optional: pymongo (for MongoDB dashboard mirror). Install with: pip install pymongo
+# pymongo>=4.6

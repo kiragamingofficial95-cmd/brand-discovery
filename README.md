@@ -62,3 +62,22 @@ git push
 ```
 python -m unittest discover -s tests
 ```
+
+## MongoDB + Vercel dashboard (optional)
+
+Brands can be mirrored to MongoDB Atlas on every run and served by a Next.js dashboard
+hosted on Vercel.
+
+1. Create a MongoDB Atlas cluster and get a connection string.
+2. Set env var `MONGODB_URI` (and optionally `MONGODB_DB`, default `brand_discovery`).
+   - Locally: copy `.env.example` to `.env` and fill it in (`.env` is gitignored).
+   - In GitHub Actions: add `MONGODB_URI` as a repository secret and pass it in the workflow env.
+   - In Vercel: add `MONGODB_URI` under Project Settings -> Environment Variables.
+3. Install optional dependency: `pip install pymongo`.
+4. Run the pipeline normally; accepted brands are upserted into the `brands` collection and a
+   run snapshot into `runs`.
+5. Deploy `dashboard/` to Vercel (`cd dashboard && vercel` or connect the folder as a Vercel project).
+   The dashboard fetches `/api/brands` and `/api/summary` (serverless routes reading Mongo),
+   revalidating every 60s.
+
+The legacy GitHub Pages dashboard (`docs/`) still works and is updated on every push.

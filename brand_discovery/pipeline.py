@@ -83,6 +83,16 @@ class Pipeline:
                 self.db.kv_set("expansion_mode", "more")
             # 5. Report
             report = build_daily_report(self.config, self.db, accepted, self.yt.quota, self.web.quota)
+            generated_at = report.get("generated_at")
+            # 5b. Mirror accepted brands to MongoDB (dashboard read model) - best effort
+            try:
+                from .mongo import MongoWriter
+                mw = MongoWriter()
+                mw.upsert_run(run_id, generated_at, accepted, report,
+                              self.yt.quota.used_today(), self.web.quota.used_today(), brands_found)
+                mw.close()
+            except Exception as e:
+                print(f"[pipeline] mongo mirror skipped: {e}")
             self.db.finish_run(run_id, "success", self.yt.quota.used_today() - yt_units_start + yt_units_start,
                                self.web.quota.used_today() - web_start, brands_found, json.dumps(report)[:1000])
             return {"run_id": run_id, "brands_found": brands_found, "accepted": accepted, "report": report}
