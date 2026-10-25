@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-25T15:54:32.885021",
+  "generated_at": "2026-10-25T16:20:25.767145",
   "brands_per_niche": {
     "AI": 18
   },
@@ -158,11 +158,11 @@
       "website": "https://t.me",
       "niche": "AI",
       "sub_niche": "video tools",
-      "score": 18,
+      "score": 26,
       "older_evidence": false,
       "evidence": [
         {
-          "url": "https://www.youtube.com/watch?v=3tyO5t7HK38",
+          "url": "https://www.youtube.com/watch?v=7WEdNITltpE",
           "date": "2026-10-23",
           "strength": "strong",
           "source_type": "youtube",
@@ -170,7 +170,7 @@
           "checked_in_run": true
         },
         {
-          "url": "https://www.youtube.com/watch?v=7WEdNITltpE",
+          "url": "https://www.youtube.com/watch?v=3tyO5t7HK38",
           "date": "2026-10-23",
           "strength": "strong",
           "source_type": "youtube",
@@ -186,7 +186,7 @@
           "checked_in_run": true
         }
       ],
-      "why_fits": "Fits AI/video tools via 3 evidence signals; score 18."
+      "why_fits": "Fits AI/video tools via 3 evidence signals; score 26."
     },
     {
       "name": "amzn.to",
