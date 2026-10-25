@@ -20,6 +20,7 @@ class WebSearchClient:
         self.db = db
         self.quota = quota
         self.api_key = api_key or os.environ.get("WEB_SEARCH_API_KEY", "")
+        self.cx = os.environ.get("GOOGLE_CSE_CX", "") or config.web.get("cse_cx", "")
         self.transport = transport
         self.dry_run = dry_run
         self.fixtures_dir = fixtures_dir
@@ -50,10 +51,11 @@ class WebSearchClient:
             })
             with urllib.request.urlopen(url, timeout=30) as resp:
                 return json.loads(resp.read().decode())
-        # generic: google custom search
-        url = "https://www.googleapis.com/customsearch/v1?" + urllib.parse.urlencode({
-            "q": query, "num": num_results, "key": self.api_key,
-        })
+        # generic: google custom search (requires cx search engine id)
+        params = {"q": query, "num": num_results, "key": self.api_key}
+        if self.cx:
+            params["cx"] = self.cx
+        url = "https://www.googleapis.com/customsearch/v1?" + urllib.parse.urlencode(params)
         with urllib.request.urlopen(url, timeout=30) as resp:
             return json.loads(resp.read().decode())
 

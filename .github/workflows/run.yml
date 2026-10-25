@@ -25,6 +25,7 @@ jobs:
           YOUTUBE_BACKEND: scraper
           YOUTUBE_BASE_URL: https://youtube-scraper-api-olive.vercel.app/youtube/v3
           WEB_SEARCH_API_KEY: ${{ secrets.WEB_SEARCH_API_KEY }}
+          GOOGLE_CSE_CX: ${{ secrets.GOOGLE_CSE_CX }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           MONGODB_DB: brand_discovery
         run: python -m brand_discovery run

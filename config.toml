@@ -68,7 +68,8 @@ saturation_penalty = 15
 no_creator_angle_penalty = 20
 
 [web]
-search_api = "serpapi"
+search_api = "google"
+cse_cx = "86fc64d4f4990478e"
 manual_sources = [
   "Meta Ad Library",
   "Google Ads Transparency Center",
