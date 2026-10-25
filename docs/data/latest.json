@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-10-25T14:53:44.092074",
+  "generated_at": "2026-10-25T15:54:32.885021",
   "brands_per_niche": {
-    "AI": 17
+    "AI": 18
   },
-  "total_brands": 17,
+  "total_brands": 18,
   "duplicate_rate": 0.0,
   "re_reported": 0,
   "best_queries": [
     {
       "text": "coding assistants paid promotion",
-      "yield": 600.0
+      "yield": 700.0
     },
     {
       "text": "writing sponsored",
-      "yield": 600.0
+      "yield": 700.0
     },
     {
       "text": "video tools use code",
@@ -158,7 +158,7 @@
       "website": "https://t.me",
       "niche": "AI",
       "sub_niche": "video tools",
-      "score": 33,
+      "score": 18,
       "older_evidence": false,
       "evidence": [
         {
@@ -176,9 +176,17 @@
           "source_type": "youtube",
           "note": "sponsorship signal",
           "checked_in_run": true
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=GGOP8gx4368",
+          "date": "2026-01-21",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
         }
       ],
-      "why_fits": "Fits AI/video tools via 2 evidence signals; score 33."
+      "why_fits": "Fits AI/video tools via 3 evidence signals; score 18."
     },
     {
       "name": "amzn.to",
@@ -286,6 +294,25 @@
         {
           "url": "https://www.youtube.com/watch?v=U_CDV18ah8s",
           "date": "2026-04-10",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
+    },
+    {
+      "name": "api.whatsapp.com",
+      "website": "https://api.whatsapp.com",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 23,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=GGOP8gx4368",
+          "date": "2026-01-21",
           "strength": "strong",
           "source_type": "youtube",
           "note": "sponsorship signal",
