@@ -35,17 +35,5 @@ jobs:
         with:
           name: reports
           path: reports/
-  deploy:
-    needs: run
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+  # Dashboard is published by GitHub Pages (legacy build from master:/docs),
+  # which rebuilds automatically on every push of docs/data/latest.json.
