@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-25T23:03:43.133690",
+  "generated_at": "2026-10-26T02:45:50.350099",
   "brands_per_niche": {
     "AI": 15
   },
@@ -105,7 +105,7 @@
       "older_evidence": false,
       "evidence": [
         {
-          "url": "https://www.youtube.com/watch?v=3tyO5t7HK38",
+          "url": "https://www.youtube.com/watch?v=5faLQIt3G88",
           "date": "2026-10-23",
           "strength": "strong",
           "source_type": "youtube",
@@ -113,7 +113,7 @@
           "checked_in_run": true
         },
         {
-          "url": "https://www.youtube.com/watch?v=5faLQIt3G88",
+          "url": "https://www.youtube.com/watch?v=3tyO5t7HK38",
           "date": "2026-10-23",
           "strength": "strong",
           "source_type": "youtube",
