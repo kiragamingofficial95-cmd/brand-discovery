@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-28T17:57:36.681793",
+  "generated_at": "2026-10-28T22:10:53.955604",
   "brands_per_niche": {
-    "AI": 18
+    "AI": 10
   },
-  "total_brands": 18,
+  "total_brands": 10,
   "duplicate_rate": 0.0,
   "re_reported": 0,
   "best_queries": [
@@ -12,15 +12,19 @@
       "yield": 700.0
     },
     {
-      "text": "coding assistants sponsored",
-      "yield": 400.0
+      "text": "writing sponsored",
+      "yield": 600.0
     },
     {
-      "text": "writing sponsored",
-      "yield": 400.0
+      "text": "video tools sponsored",
+      "yield": 300.0
     },
     {
       "text": "video tools use code",
+      "yield": 300.0
+    },
+    {
+      "text": "video tools review partnership",
       "yield": 300.0
     },
     {
@@ -28,11 +32,11 @@
       "yield": 300.0
     },
     {
-      "text": "video tools sponsored",
+      "text": "coding assistants sponsored",
       "yield": 200.0
     },
     {
-      "text": "video tools review partnership",
+      "text": "coding assistants #ad",
       "yield": 200.0
     },
     {
@@ -40,12 +44,8 @@
       "yield": 200.0
     },
     {
-      "text": "writing #ad",
-      "yield": 100.0
-    },
-    {
       "text": "writing use code",
-      "yield": 100.0
+      "yield": 200.0
     }
   ],
   "youtube_units_used": 0,
@@ -59,16 +59,35 @@
   ],
   "brands": [
     {
-      "name": "recraft.brand",
-      "website": "https://recraft.brand",
+      "name": "bitwarden.brand",
+      "website": "https://bitwarden.brand",
       "niche": "AI",
       "sub_niche": "video tools",
       "score": 10,
       "older_evidence": false,
       "evidence": [
         {
-          "url": "https://www.youtube.com/watch?v=qlSI_ZbRdEc",
-          "date": "2026-10-22",
+          "url": "https://www.youtube.com/watch?v=NWANo9BRz6Y",
+          "date": "2026-10-23",
+          "strength": "medium",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/video tools via 1 evidence signals; score 10."
+    },
+    {
+      "name": "higgsfield.brand",
+      "website": "https://higgsfield.brand",
+      "niche": "AI",
+      "sub_niche": "video tools",
+      "score": 10,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=nmpHMBnZHWQ",
+          "date": "2026-10-28",
           "strength": "medium",
           "source_type": "youtube",
           "note": "sponsorship signal",
@@ -170,118 +189,23 @@
       "why_fits": "Fits AI/video tools via 3 evidence signals; score 18."
     },
     {
-      "name": "amzn.to",
-      "website": "https://amzn.to",
+      "name": "viktor.brand",
+      "website": "https://viktor.brand",
       "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
+      "sub_niche": "video tools",
+      "score": 25,
       "older_evidence": false,
       "evidence": [
         {
-          "url": "https://www.youtube.com/watch?v=bw3PXy7b2sw",
-          "date": "2026-09-24",
+          "url": "https://www.youtube.com/watch?v=fcs2SPtZTvg",
+          "date": "2026-10-28",
           "strength": "strong",
           "source_type": "youtube",
           "note": "sponsorship signal",
           "checked_in_run": true
         }
       ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "brizy.io",
-      "website": "https://brizy.io",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=U_CDV18ah8s",
-          "date": "2026-04-10",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "generatepress.com",
-      "website": "https://generatepress.com",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=U_CDV18ah8s",
-          "date": "2026-04-10",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "wpastra.com",
-      "website": "https://wpastra.com",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=U_CDV18ah8s",
-          "date": "2026-04-10",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "csshero.org",
-      "website": "https://csshero.org",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=U_CDV18ah8s",
-          "date": "2026-04-10",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "youtube.com",
-      "website": "https://youtube.com",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=U_CDV18ah8s",
-          "date": "2026-04-10",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
+      "why_fits": "Fits AI/video tools via 1 evidence signals; score 25."
     },
     {
       "name": "api.whatsapp.com",
@@ -303,25 +227,6 @@
       "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
     },
     {
-      "name": "warp.brand",
-      "website": "https://warp.brand",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 15,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=5fhcklZe-qE",
-          "date": "2025-10-15",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 15."
-    },
-    {
       "name": "asustodaysponsor.brand",
       "website": "https://asustodaysponsor.brand",
       "niche": "AI",
@@ -341,73 +246,16 @@
       "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 25."
     },
     {
-      "name": "aitoolgazette.com",
-      "website": "https://aitoolgazette.com",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=Jo00AQyCgnw",
-          "date": "2026-09-26",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "easyaccess.tech",
-      "website": "https://easyaccess.tech",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=s-0nKUzN2D4",
-          "date": "2026-07-22",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "gohighlevel.com",
-      "website": "https://gohighlevel.com",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=s-0nKUzN2D4",
-          "date": "2026-07-22",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
-    },
-    {
-      "name": "coderabbit.brand",
-      "website": "https://coderabbit.brand",
+      "name": "ourseasonpartners.brand",
+      "website": "https://ourseasonpartners.brand",
       "niche": "AI",
       "sub_niche": "writing",
       "score": 15,
       "older_evidence": false,
       "evidence": [
         {
-          "url": "https://www.youtube.com/watch?v=bzYziksDslU",
-          "date": "2026-08-16",
+          "url": "https://www.youtube.com/watch?v=JiWgKRgdgpI",
+          "date": "2026-04-08",
           "strength": "strong",
           "source_type": "youtube",
           "note": "sponsorship signal",
