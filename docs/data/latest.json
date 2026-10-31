@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-31T20:56:35.143958",
+  "generated_at": "2026-10-31T23:58:06.623763",
   "brands_per_niche": {
-    "AI": 5
+    "AI": 3
   },
-  "total_brands": 5,
+  "total_brands": 3,
   "duplicate_rate": 0.0,
   "re_reported": 0,
   "best_queries": [
@@ -16,36 +16,36 @@
       "yield": 400.0
     },
     {
-      "text": "video tools sponsored",
-      "yield": 300.0
-    },
-    {
       "text": "coding assistants review partnership",
       "yield": 300.0
-    },
-    {
-      "text": "coding assistants sponsored",
-      "yield": 200.0
     },
     {
       "text": "coding assistants #ad",
       "yield": 200.0
     },
     {
-      "text": "video tools review partnership",
-      "yield": 100.0
-    },
-    {
       "text": "coding assistants use code",
-      "yield": 100.0
+      "yield": 200.0
     },
     {
       "text": "writing paid promotion",
+      "yield": 200.0
+    },
+    {
+      "text": "video tools sponsored",
+      "yield": 100.0
+    },
+    {
+      "text": "video tools review partnership",
       "yield": 100.0
     },
     {
       "text": "writing use code",
       "yield": 100.0
+    },
+    {
+      "text": "video tools paid promotion",
+      "yield": 0.0
     }
   ],
   "youtube_units_used": 0,
@@ -59,59 +59,32 @@
   ],
   "brands": [
     {
-      "name": "x.ai",
-      "website": "https://x.ai",
+      "name": "asustodaysponsor.brand",
+      "website": "https://asustodaysponsor.brand",
       "niche": "AI",
-      "sub_niche": "video tools",
-      "score": 33,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=F3MEjYzc1OY",
-          "date": "2026-10-29",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/video tools via 1 evidence signals; score 33."
-    },
-    {
-      "name": "spacex.brand",
-      "website": "https://spacex.brand",
-      "niche": "AI",
-      "sub_niche": "video tools",
+      "sub_niche": "coding assistants",
       "score": 25,
       "older_evidence": false,
       "evidence": [
         {
-          "url": "https://www.youtube.com/watch?v=F3MEjYzc1OY",
-          "date": "2026-10-29",
+          "url": "https://www.youtube.com/watch?v=XGuQLDIrTWw",
+          "date": "2026-10-01",
           "strength": "strong",
           "source_type": "youtube",
           "note": "sponsorship signal",
           "checked_in_run": true
         }
       ],
-      "why_fits": "Fits AI/video tools via 1 evidence signals; score 25."
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 25."
     },
     {
       "name": "amazon.com",
       "website": "https://amazon.com",
       "niche": "AI",
-      "sub_niche": "coding assistants",
+      "sub_niche": "writing",
       "score": 18,
       "older_evidence": false,
       "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=bw3PXy7b2sw",
-          "date": "2026-09-24",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        },
         {
           "url": "https://www.youtube.com/watch?v=6EKs2SHvdJ0",
           "date": "2026-10-28",
@@ -145,26 +118,7 @@
           "checked_in_run": true
         }
       ],
-      "why_fits": "Fits AI/coding assistants via 5 evidence signals; score 18."
-    },
-    {
-      "name": "amzn.to",
-      "website": "https://amzn.to",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 23,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=bw3PXy7b2sw",
-          "date": "2026-09-24",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
+      "why_fits": "Fits AI/writing via 4 evidence signals; score 18."
     },
     {
       "name": "beehiiv.com",
