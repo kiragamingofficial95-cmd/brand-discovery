@@ -1,31 +1,27 @@
 {
-  "generated_at": "2026-11-02T21:20:43.969374",
+  "generated_at": "2026-11-03T04:57:12.780446",
   "brands_per_niche": {
-    "AI": 7
+    "AI": 6
   },
-  "total_brands": 7,
+  "total_brands": 6,
   "duplicate_rate": 0.0,
   "re_reported": 0,
   "best_queries": [
     {
-      "text": "coding assistants sponsored",
-      "yield": 700.0
+      "text": "writing sponsored",
+      "yield": 600.0
     },
     {
       "text": "coding assistants use code",
       "yield": 400.0
     },
     {
-      "text": "writing sponsored",
-      "yield": 400.0
+      "text": "video tools use code",
+      "yield": 300.0
     },
     {
       "text": "coding assistants review partnership",
       "yield": 300.0
-    },
-    {
-      "text": "video tools review partnership",
-      "yield": 200.0
     },
     {
       "text": "coding assistants paid promotion",
@@ -40,7 +36,11 @@
       "yield": 100.0
     },
     {
-      "text": "writing #ad",
+      "text": "video tools review partnership",
+      "yield": 100.0
+    },
+    {
+      "text": "coding assistants sponsored",
       "yield": 100.0
     },
     {
@@ -95,25 +95,6 @@
         }
       ],
       "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 10."
-    },
-    {
-      "name": "finalroundai.com",
-      "website": "https://finalroundai.com",
-      "niche": "AI",
-      "sub_niche": "coding assistants",
-      "score": 33,
-      "older_evidence": false,
-      "evidence": [
-        {
-          "url": "https://www.youtube.com/watch?v=mNWLkw7jSWI",
-          "date": "2026-11-01",
-          "strength": "strong",
-          "source_type": "youtube",
-          "note": "sponsorship signal",
-          "checked_in_run": true
-        }
-      ],
-      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 33."
     },
     {
       "name": "app.codecrafters.io",
