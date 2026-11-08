@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T12:40:31.044688",
+  "generated_at": "2026-11-08T19:22:24.509198",
   "brands_per_niche": {
     "AI": 14
   },
@@ -44,7 +44,7 @@
       "yield": 100.0
     },
     {
-      "text": "writing use code",
+      "text": "writing #ad",
       "yield": 100.0
     }
   ],
@@ -86,8 +86,8 @@
       "older_evidence": false,
       "evidence": [
         {
-          "url": "https://www.youtube.com/watch?v=TgOCUAMqTcE",
-          "date": "2026-11-05",
+          "url": "https://www.youtube.com/watch?v=hXvRwBx_LVI",
+          "date": "2026-11-08",
           "strength": "medium",
           "source_type": "youtube",
           "note": "sponsorship signal",
