@@ -1,13 +1,43 @@
 {
-  "generated_at": "2026-11-19T11:00:00.519292",
-  "brands_per_niche": {},
-  "total_brands": 0,
+  "generated_at": "2026-11-19T19:55:40.215347",
+  "brands_per_niche": {
+    "AI": 10
+  },
+  "total_brands": 10,
   "duplicate_rate": 0.0,
   "re_reported": 0,
   "best_queries": [
     {
+      "text": "coding assistants sponsored",
+      "yield": 700.0
+    },
+    {
+      "text": "coding assistants review partnership",
+      "yield": 300.0
+    },
+    {
+      "text": "writing sponsored",
+      "yield": 300.0
+    },
+    {
       "text": "video tools sponsored",
-      "yield": 0.0
+      "yield": 200.0
+    },
+    {
+      "text": "video tools review partnership",
+      "yield": 200.0
+    },
+    {
+      "text": "coding assistants #ad",
+      "yield": 200.0
+    },
+    {
+      "text": "coding assistants use code",
+      "yield": 200.0
+    },
+    {
+      "text": "video tools use code",
+      "yield": 100.0
     },
     {
       "text": "video tools paid promotion",
@@ -15,34 +45,6 @@
     },
     {
       "text": "video tools #ad",
-      "yield": 0.0
-    },
-    {
-      "text": "video tools use code",
-      "yield": 0.0
-    },
-    {
-      "text": "video tools review partnership",
-      "yield": 0.0
-    },
-    {
-      "text": "coding assistants sponsored",
-      "yield": 0.0
-    },
-    {
-      "text": "coding assistants paid promotion",
-      "yield": 0.0
-    },
-    {
-      "text": "coding assistants #ad",
-      "yield": 0.0
-    },
-    {
-      "text": "coding assistants use code",
-      "yield": 0.0
-    },
-    {
-      "text": "coding assistants review partnership",
       "yield": 0.0
     }
   ],
@@ -55,5 +57,212 @@
     "TikTok Creative Center",
     "creators' social posts"
   ],
-  "brands": []
+  "brands": [
+    {
+      "name": "higgsfieldimayearnacommissionfrom.brand",
+      "website": "https://higgsfieldimayearnacommissionfrom.brand",
+      "niche": "AI",
+      "sub_niche": "video tools",
+      "score": 10,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=VMA8waKShkw",
+          "date": "2026-11-18",
+          "strength": "medium",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/video tools via 1 evidence signals; score 10."
+    },
+    {
+      "name": "higgsfield.brand",
+      "website": "https://higgsfield.brand",
+      "niche": "AI",
+      "sub_niche": "video tools",
+      "score": 10,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=AROGVvDV4w0",
+          "date": "2026-11-16",
+          "strength": "medium",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/video tools via 1 evidence signals; score 10."
+    },
+    {
+      "name": "t.me",
+      "website": "https://t.me",
+      "niche": "AI",
+      "sub_niche": "video tools",
+      "score": 33,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=Gu9lO8oqGYU",
+          "date": "2026-11-14",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/video tools via 1 evidence signals; score 33."
+    },
+    {
+      "name": "amazon.com",
+      "website": "https://amazon.com",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 23,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=bw3PXy7b2sw",
+          "date": "2026-09-24",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=9YrcSWczGdg",
+          "date": "2026-08-23",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=8Pi6vGRlp1c",
+          "date": "2026-01-09",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 3 evidence signals; score 23."
+    },
+    {
+      "name": "amzn.to",
+      "website": "https://amzn.to",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 23,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=bw3PXy7b2sw",
+          "date": "2026-09-24",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
+    },
+    {
+      "name": "warp.brand",
+      "website": "https://warp.brand",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 15,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=5fhcklZe-qE",
+          "date": "2025-10-15",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 15."
+    },
+    {
+      "name": "ourchampionandsponsorsupporters.brand",
+      "website": "https://ourchampionandsponsorsupporters.brand",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 25,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=ajfQWhGQGLE",
+          "date": "2026-11-10",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 25."
+    },
+    {
+      "name": "aitoolgazette.com",
+      "website": "https://aitoolgazette.com",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 23,
+      "older_evidence": false,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=Jo00AQyCgnw",
+          "date": "2026-09-26",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
+    },
+    {
+      "name": "easyaccess.tech",
+      "website": "https://easyaccess.tech",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 23,
+      "older_evidence": true,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=s-0nKUzN2D4",
+          "date": "2026-07-22",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
+    },
+    {
+      "name": "gohighlevel.com",
+      "website": "https://gohighlevel.com",
+      "niche": "AI",
+      "sub_niche": "coding assistants",
+      "score": 23,
+      "older_evidence": true,
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=s-0nKUzN2D4",
+          "date": "2026-07-22",
+          "strength": "strong",
+          "source_type": "youtube",
+          "note": "sponsorship signal",
+          "checked_in_run": true
+        }
+      ],
+      "why_fits": "Fits AI/coding assistants via 1 evidence signals; score 23."
+    }
+  ]
 }
